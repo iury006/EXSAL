@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EXSAL · Análise de sal de cozinha</title>
+<meta name="description" content="Ferramenta interativa para cálculo de cálcio, magnésio, cloreto e iodeto em amostras de sal de cozinha.">
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#14213d;--mut:#6b7686;--line:#e6e9ee;--acc:#0b6bcb;--acc2:#e8f1fc;--ok:#14804a;--okb:#e3f6ec;--no:#c62828;--nob:#fdeaea;--r:14px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--acc)}
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:24px;padding:12px max(20px,calc((100% - 1040px)/2));background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;letter-spacing:.5px;font-size:20px;color:var(--ink);text-decoration:none}.brand b{color:var(--acc)}
+nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+nav a{padding:7px 14px;border-radius:99px;color:var(--mut);text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap}
+nav a:hover{background:var(--acc2);color:var(--acc)}nav a.on{background:var(--ink);color:#fff}
+main{max-width:1040px;margin:0 auto;padding:36px 20px 60px}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.2;margin:0 0 10px;letter-spacing:-.5px}
+h2{font-size:18px;margin:0 0 12px}.lead{color:var(--mut);max-width:720px;margin:0 0 28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+a.tile{display:block;text-decoration:none;color:inherit;transition:.15s}
+a.tile:hover{transform:translateY(-2px);border-color:var(--acc);box-shadow:0 8px 24px rgba(11,107,203,.1)}
+.sym{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--acc2);color:var(--acc);font-weight:700;margin-bottom:12px}
+.tile h2{margin:0 0 4px}.tile p{margin:0;color:var(--mut);font-size:14px}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin:0 0 22px}
+.tabs button{border:0;background:none;padding:10px 16px;font:inherit;font-size:15px;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--acc);border-color:var(--acc);font-weight:600}
+.seg{display:inline-flex;background:#eceff3;border-radius:10px;padding:3px;margin:6px 0 20px}
+.seg button{border:0;background:none;padding:6px 18px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer;color:var(--mut)}
+.seg button.on{background:#fff;color:var(--ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+label{display:block;font-size:13px;color:var(--mut);margin-bottom:4px}
+.f{position:relative}.f input{width:100%;padding:10px 46px 10px 12px;border:1px solid #d5dae1;border-radius:10px;font:inherit;background:#fbfcfe}
+.f input:focus{outline:2px solid var(--acc);border-color:transparent;background:#fff}
+.f span{position:absolute;right:12px;bottom:11px;font-size:12px;color:var(--mut)}
+.row{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:12px}
+.rep{display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:end;margin-bottom:12px}
+.rep>b{font-size:13px;color:var(--mut);font-weight:600;padding-bottom:12px}.rep .row{margin:0}
+.res{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);font-size:15px}
+.res:last-of-type{border:0}.res b{font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:10px;grid-template-columns:1fr 1fr;margin:14px 0}
+.stat div{background:var(--bg);border-radius:12px;padding:14px}.stat small{display:block;color:var(--mut);font-size:12px}.stat strong{font-size:22px;font-variant-numeric:tabular-nums}
+.badge{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-radius:12px;background:#eef0f3;color:var(--mut);font-size:14px}
+.badge strong{font-size:18px;letter-spacing:.5px}.badge.ok{background:var(--okb);color:var(--ok)}.badge.no{background:var(--nob);color:var(--no)}
+.note{font-size:13px;color:var(--mut);margin:12px 0 0}
+.prose p,.prose li{max-width:760px}.prose h2{margin-top:24px}
+.eq{display:grid;gap:16px}.eq img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:12px;background:#fff;padding:8px}
+.vid{aspect-ratio:16/9;width:100%;border:0;border-radius:var(--r);background:#000}
+.logos{display:flex;flex-wrap:wrap;gap:28px;align-items:center;margin-top:36px}.logos img{height:54px;width:auto;border-radius:6px}
+footer{text-align:center;color:var(--mut);font-size:13px;padding:24px;border-top:1px solid var(--line)}
+@media(max-width:640px){.rep{grid-template-columns:1fr}.rep>b{padding:0}.top{gap:10px}}
+</style>
+</head>
+<body>
+<header class="top"><a class="brand" href="#/">EX<b>SAL</b></a><nav id="nav"></nav></header>
+<main id="app"></main>
+<footer>EXSAL · Projeto de TCC — Licenciatura em Química · UNILAB</footer>
+<script>
+/* ===== Utilitários (mesma semântica do Excel: célula vazia = 0 nas contas) ===== */
+const $=s=>document.querySelector(s);
+const num=s=>{s=String(s).trim().replace(',','.');if(s==='')return null;const n=Number(s);return isNaN(n)?null:n};
+const z=x=>x==null?0:x, fin=x=>Number.isFinite(x)?x:null;
+const avg=a=>a.length?a.reduce((p,c)=>p+c,0)/a.length:null;
+const sd=a=>{if(a.length<2)return null;const m=avg(a);return Math.sqrt(a.reduce((p,c)=>p+(c-m)**2,0)/(a.length-1))};
+const fmt=(x,d=4)=>x==null?'—':x.toLocaleString('pt-BR',{maximumFractionDigits:d});
+
+/* ===== Análises: fórmulas idênticas às da planilha ===== */
+const AN={
+calcio:{nome:'Cálcio',sym:'Ca²⁺',un:'%',g:[['m','Massa da amostra','g'],['M','Molaridade do EDTA','mol/L']],r:[['v','Volume de EDTA','mL']],
+ f:(g,r)=>200.4*z(g.M)*z(r.v)/z(g.m),
+ ok:(m,n)=>m<=(n==2?0.07111111:0.071111),regra:'Limite da RDC nº 397/2020 (ANVISA): até 0,07 % de cálcio.',
+ met:`<p><b>Material</b><br>Balão volumétrico de 500 mL, pipeta volumétrica de 10 mL, frasco Erlenmeyer de 250 mL, proveta de 50 mL, pipeta de 5 mL e bureta de 10 mL.</p>
+ <p><b>Reagentes</b></p><ul><li>Solução de hidróxido de sódio a 20% m/v;</li><li>Calcon a 1% com sulfato de sódio m/m;</li><li>Propionato de cálcio;</li><li>Solução alcoólica de negro de eriocromo T a 0,4% m/v;</li><li>Solução-tampão de pH = 10;</li><li>Solução de sal dissódico de EDTA 0,1 M.</li></ul>
+ <p><b>Procedimento</b><br>Pese 50 g da amostra em um béquer e transfira para um balão volumétrico de 500 mL, com o auxílio de 300 mL de água. Deixe em repouso por 12 horas e complete o volume (solução-estoque A). Transfira 10 mL desta solução para um frasco Erlenmeyer de 250 mL. Junte 50 mL de água e 5 mL de solução de hidróxido de sódio a 20%. Adicione, aos poucos para não formar grumos, calcon a 1% com sulfato de sódio até coloração rósea nítida (aproximadamente 0,1 g) e titule com solução de sal dissódico de EDTA 0,01 M até coloração azul nítida.</p>`,eq:['ca-1','ca-2']},
+magnesio:{nome:'Magnésio',sym:'Mg²⁺',un:'%',g:[['m','Massa da amostra','g']],r:[['e','Volume de EDTA','mL'],['c','Volume de cálcio','mL']],
+ f:(g,r)=>((((z(r.e)-z(r.c))/1000)*0.01)*24.305)*50*100/z(g.m),
+ ok:m=>m<=0.5,regra:'Limite da ANVISA: no máximo 0,5 % de magnésio.',
+ met:`<p><b>Material</b><br>Frasco Erlenmeyer de 250 mL, pipeta volumétrica de 10 mL, pipeta graduada de 10 mL, proveta de 25 mL, pipeta graduada de 1 mL e bureta de 10 mL.</p>
+ <p><b>Reagentes</b></p><ul><li>Solução de EDTA 0,01 M;</li><li>Solução alcoólica de negro de eriocromo T a 0,4% m/v;</li><li>Solução tampão pH 10.</li></ul>
+ <p><b>Procedimento</b><br>Transfira 10 mL da solução estoque A obtida para um frasco Erlenmeyer de 250 mL. Junte 25 mL de água e 10 mL de solução-tampão de pH = 10. Adicione 0,5 mL de solução alcoólica de negro de eriocromo T a 0,4%. Titule com EDTA 0,01 M até viragem do indicador, de vermelho para azul nítido.</p>`,eq:['mg-1','mg-2']},
+cloreto:{nome:'Cloreto',sym:'Cl⁻',un:'%',g:[['m','Massa da amostra','g'],['b','Volume do branco','mL']],r:[['v','Volume de AgNO₃','mL']],
+ f:(g,r)=>(5.85*(((z(r.v)-z(g.b))/100)*50*100))/z(g.m),
+ ok:m=>m>=96.95,regra:'Decreto nº 75.697/1975: no mínimo 96,95 % de cloreto de sódio.',
+ /* com 2 réplicas a planilha usa (R1+R2)/COUNT(volumes preenchidos) */
+ media:(vals,n,rs)=>{const v=vals.filter(x=>x!=null);if(n!=2)return avg(v);const c=rs.filter(r=>r.v!=null).length;return vals.every(x=>x!=null)&&c?(vals[0]+vals[1])/c:null},
+ met:`<p><b>Determinação de cloretos em cloreto de sódio</b><br>Parâmetro físico-químico muito importante numa análise de sal, pois o teor encontrado é classificatório para o produto. Em análise rotineira, o cloreto de sódio pode ser dosado diretamente pelo método argentométrico de Mohr, conhecido por sua exatidão e rapidez.</p>
+ <p><b>Material</b><br>Balão volumétrico de 500 mL, pipeta volumétrica de 10 mL, proveta de 50 mL, frasco Erlenmeyer de 250 mL, bureta de 25 mL e balança analítica.</p>
+ <p><b>Reagentes</b></p><ul><li>Solução de cromato de potássio a 10% m/v;</li><li>Solução de nitrato de prata 0,1 M.</li></ul>
+ <p><b>Procedimento</b><br>Pese 5 g da amostra, transfira para um balão volumétrico de 500 mL, com auxílio de 200 mL de água, deixe em repouso no mínimo 2 horas, complete o volume e agite. Transfira, com pipeta volumétrica, 10 mL dessa solução para um frasco Erlenmeyer de 250 mL. Adicione 50 mL de água e 2 gotas de solução de cromato de potássio a 10%. Titule com solução de nitrato de prata 0,1 M.</p>`,eq:['cl-1','cl-2']},
+iodeto:{nome:'Iodeto',sym:'I⁻',un:'mg/kg',g:[],r:[['m','Massa da amostra','g'],['v','Volume de tiossulfato','mL']],
+ f:(g,r)=>0.1459*z(r.v)/z(r.m)*1000,
+ ok:m=>m>=15&&m<=45,regra:'Lei nº 1.944/1950: de 15 a 45 mg/kg de iodo.',
+ met:`<p><b>Material</b><br>Béquer de 100 mL, frasco Erlenmeyer de 500 mL, proveta de 250 mL, pipeta de 5 mL, bureta de 10 mL e balança analítica.</p>
+ <p><b>Reagentes</b></p><ul><li>Solução de ácido sulfúrico 0,5 M;</li><li>Iodeto de potássio;</li><li>Solução de tiossulfato de sódio 0,005 M;</li><li>Solução de amido a 1%, recém-preparada (dissolva 1 g de amido em 100 mL de água, ferva e esfrie à temperatura ambiente).</li></ul>
+ <p><b>Procedimento</b><br>Pese 10 g da amostra e transfira para um frasco Erlenmeyer de 500 mL, com auxílio de 200 mL de água bidestilada. Agite até a dissolução. Adicione 5 mL de solução de ácido sulfúrico 0,5 M. Adicione cerca de 0,1 g de iodeto de potássio, 2 mL de solução de amido a 1%, como indicador, e titule o iodo liberado com solução de tiossulfato de sódio 0,005 M, usando uma bureta de 10 mL.</p>`,eq:['i-1','i-2']}
+};
+const KEYS=Object.keys(AN), ST={};
+KEYS.forEach(k=>ST[k]={n:2,tab:'calc',g:{},r:[{},{},{},{},{}],raw:{}});
+
+function calcular(k){
+  const A=AN[k],s=ST[k],rs=s.r.slice(0,s.n);
+  const vals=rs.map(r=>fin(A.f(s.g,r)));
+  const v=vals.filter(x=>x!=null);
+  const media=A.media?A.media(vals,s.n,rs):avg(v);
+  const dp=sd(v);
+  return{vals,media,dp,ok:media==null?null:A.ok(media,s.n)};
+}
+function atualizar(k){
+  const A=AN[k],c=calcular(k);
+  c.vals.forEach((x,i)=>{$('#v'+i).textContent=fmt(x)+(x!=null?' '+A.un:'')});
+  $('#med').textContent=fmt(c.media);$('#dp').textContent=fmt(c.dp);
+  const b=$('#sen');b.className='badge '+(c.ok==null?'':c.ok?'ok':'no');
+  $('#sen strong').textContent=c.ok==null?'—':c.ok?'SIM':'NÃO';
+}
+const campo=(id,l,u,val)=>`<div class="f"><label>${l}</label><input inputmode="decimal" data-id="${id}" value="${val??''}" placeholder="0"><span>${u}</span></div>`;
+
+function viewAnalise(k){
+  const A=AN[k],s=ST[k];
+  let h=`<h1>${A.nome} <span style="color:var(--acc)">${A.sym}</span></h1><p class="lead">Preencha os campos e o cálculo é feito automaticamente.</p>
+  <div class="tabs">${[['calc','Calculadora'],['met','Metodologia'],['eq','Equações']].map(t=>`<button data-tab="${t[0]}" class="${s.tab==t[0]?'on':''}">${t[1]}</button>`).join('')}</div>`;
+  if(s.tab=='met')return h+`<div class="card prose">${A.met}<p class="note">Metodologia baseada no livro “Métodos Físico-Químicos para Análise de Alimentos”, do Instituto Adolfo Lutz.</p></div>`;
+  if(s.tab=='eq')return h+`<div class="card eq">${A.eq.map(e=>`<img src="assets/eq-${e}.png" alt="Equação de ${A.nome}">`).join('')}</div>`;
+  h+=`<label>Quantidade de réplicas</label><div class="seg">${[2,3,4,5].map(n=>`<button data-n="${n}" class="${s.n==n?'on':''}">${n}</button>`).join('')}</div>
+  <div class="grid g2"><div class="card">`;
+  if(A.g.length)h+=`<h2>Dados gerais</h2><div class="row">${A.g.map(f=>campo('g.'+f[0],f[1],f[2],s.raw['g.'+f[0]])).join('')}</div>`;
+  h+=`<h2>Réplicas</h2>`;
+  for(let i=0;i<s.n;i++)h+=`<div class="rep"><b>Réplica ${i+1}</b><div class="row">${A.r.map(f=>campo(`r.${i}.${f[0]}`,f[1],f[2],s.raw[`r.${i}.${f[0]}`])).join('')}</div></div>`;
+  h+=`</div><div class="card"><h2>Resultado (${A.un==='%'?'amostra em %':'mg/kg'})</h2>`;
+  for(let i=0;i<s.n;i++)h+=`<div class="res"><span>Réplica ${i+1}</span><b id="v${i}">—</b></div>`;
+  h+=`<div class="stat"><div><small>Média</small><strong id="med">—</strong></div><div><small>Desvio padrão</small><strong id="dp">—</strong></div></div>
+  <div class="badge" id="sen"><span>Dentro do padrão?</span><strong>—</strong></div><p class="note">${A.regra}</p></div></div>`;
+  return h;
+}
+function ligar(k){
+  const s=ST[k];
+  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{s.tab=b.dataset.tab;route()});
+  document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{s.n=+b.dataset.n;route()});
+  document.querySelectorAll('input[data-id]').forEach(i=>i.oninput=()=>{
+    const p=i.dataset.id.split('.'),v=num(i.value);
+    s.raw[i.dataset.id]=i.value;
+    if(p[0]=='g')s.g[p[1]]=v;else s.r[+p[1]][p[2]]=v;
+    atualizar(k);
+  });
+  if(s.tab=='calc')atualizar(k);
+}
+
+/* ===== Páginas estáticas ===== */
+const VID={tut:'QMO3nRJjUQk',med:'r0OUHoA7Xig'};
+const yt=id=>`<iframe class="vid" src="https://www.youtube.com/embed/${id}" title="Vídeo" allowfullscreen loading="lazy"></iframe>`;
+const logos=`<div class="logos"><img src="assets/unilab.png" alt="UNILAB"><img src="assets/icen.png" alt="ICEN"><img src="assets/inctaa.jpg" alt="INCTAA"><img src="assets/nata.jpg" alt="NATA"></div>`;
+const PAG={
+ '':()=>`<h1>Análise de sal de cozinha</h1><p class="lead">Ferramenta interativa para calcular o teor de cálcio, magnésio, cloreto e iodeto em amostras de sal. Preencha os dados da titulação e o cálculo é feito automaticamente.</p>
+  <div class="grid g4">${KEYS.map(k=>`<a class="card tile" href="#/${k}"><div class="sym">${AN[k].sym}</div><h2>${AN[k].nome}</h2><p>Calculadora, metodologia e equações</p></a>`).join('')}</div>
+  <div class="card prose" style="margin-top:20px"><h2>Sobre o projeto</h2><p>Esta ferramenta foi criada para facilitar o cálculo de cálcio, magnésio, cloreto e iodeto presentes em amostras de sal de cozinha. Também serve como material do Trabalho de Conclusão de Curso do estudante Iury Barbosa Pereira, vinculado ao curso de Licenciatura em Química da Universidade da Integração Internacional da Lusofonia Afro-Brasileira (UNILAB), sob orientação da Profa. Dra. Lívia Paulia Dias Ribeiro, professora adjunta da mesma instituição.</p></div>
+  <div style="margin-top:20px">${yt(VID.tut)}</div>${logos}`,
+ videos:()=>`<h1>Vídeos</h1><p class="lead">Tutoriais de uso da ferramenta.</p><div class="grid g2"><div><h2>Tutorial da ferramenta</h2>${yt(VID.tut)}</div><div><h2>Média e desvio padrão</h2>${yt(VID.med)}</div></div>`,
+ contato:()=>`<h1>Contato</h1><p class="lead">Qualquer informação, dúvida ou sugestão, entre em contato com o desenvolvedor da ferramenta.</p><div class="card prose"><p>E-mail: <a href="mailto:iurybp060800@gmail.com">iurybp060800@gmail.com</a><br>Telefone: <a href="tel:+5585991161937">(85) 9 9116-1937</a></p></div>${logos}`
+};
+
+/* ===== Roteamento ===== */
+const MENU=[['','Início'],...KEYS.map(k=>[k,AN[k].nome]),['videos','Vídeos'],['contato','Contato']];
+function route(){
+  const h=(location.hash.replace(/^#\/?/,'')||'');
+  $('#nav').innerHTML=MENU.map(m=>`<a href="#/${m[0]}" class="${m[0]==h?'on':''}">${m[1]}</a>`).join('');
+  const app=$('#app');
+  if(AN[h]){app.innerHTML=viewAnalise(h);ligar(h)}else app.innerHTML=(PAG[h]||PAG[''])();
+  window.scrollTo(0,0);
+}
+addEventListener('hashchange',route);route();
+</script>
+</body>
+</html>
